@@ -28,6 +28,7 @@ double MCWalk::walk_grid(double num_samples) {
     // Walk until the goal is reached or the max number of steps is met
     while (!_walker.at_coordinate(goal) && walk_num_steps < _max_steps) {
       _walker.step(_grid);
+      _walker.visit_grid(_grid);
       ++walk_num_steps;
     }
 
@@ -67,8 +68,8 @@ void MCWalk::print_results() const {
   std::cout << std::fixed;
 	std::cout << std::showpoint;
 	std::cout << std::setprecision(5);
-  std::cout << "mean: " << std::setw(8) << mean << std::endl;
-  std::cout << "std:  " << std::setw(8) << std::sqrt(mean_var) << std::endl;
-  std::cout << "FOM:  " << std::setw(8) << FOM << std::endl;
+  std::cout << "mean:  " << std::setw(8) << mean << std::endl;
+  std::cout << "error: " << std::setw(8) << std::sqrt(mean_var) << std::endl;
+  std::cout << "FOM:   " << std::setw(8) << FOM << std::endl;
 }
 

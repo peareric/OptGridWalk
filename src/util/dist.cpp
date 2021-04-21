@@ -71,7 +71,8 @@ double PDF::evaluate(
 double PDF::sample(
     const std::vector<double> &probabilities, dist_type type) const {
   double stop = _rng.sample();
-  double total = std::accumulate(probabilities.begin(), probabilities.end(), 0);
+  double total = std::accumulate(
+    probabilities.begin(), probabilities.end(), 0.0, std::plus<double>());
   for (size_t i = 0; i < probabilities.size(); i++) {
     stop -= probabilities[i]/total;
     if (stop <= 0) {

@@ -27,6 +27,7 @@ private:
   unsigned int sample_dist(const Grid * grid, const util::direction dir);
 public: 
   Walker() : _prob_distributions(util::RNG()) {
+  _direction_probabilities.resize(8);
   std::fill(
     _direction_probabilities.begin(), _direction_probabilities.end(), 0.125);
   }
