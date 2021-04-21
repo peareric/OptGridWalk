@@ -29,8 +29,6 @@ private:
   util::Coord start, goal;
   // Nodes of the grid
   std::vector<std::vector<Node>> _nodes;
-  // Returns true if node at coordinate is in the mesh
-  bool validNode(const util::Coord & coord) const;
 
   // Returns true if node at coordinate is reachable
   bool reachableNode(const util::Coord & coord) const;

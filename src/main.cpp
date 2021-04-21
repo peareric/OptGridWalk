@@ -17,10 +17,11 @@ int main(int argc, char* argv []) {
   }
   std::cout << "Reading grid specification from " << argv[1] << std::endl;
   Grid mesh_grid(grid_input);
+  grid_input.close();
   std::cout << "Mesh grid read in successfully\n" << std::endl;
 
   // Run the analog random walk with 10^7 samples
-  double num_samples = 1e6;
+  double num_samples = 1e5;
   MCWalk monte_carlo_walk(&mesh_grid);
   auto start = std::chrono::steady_clock::now();
   std::cout << "Running analog random walk with " << num_samples << " samples";

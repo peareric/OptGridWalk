@@ -5,13 +5,9 @@
 #include <stdexcept>
 #include <string>
 
-bool Grid::validNode(const util::Coord & coord) const {
-  return coord._x_coord >= 0 && coord._x_coord < _x_dim &&
-         coord._y_coord >= 0 && coord._y_coord < _y_dim;
-}
-
 bool Grid::reachableNode(const util::Coord & coord) const {
-    return validNode(coord) &&
+    return coord._x_coord >= 0 && coord._x_coord < _x_dim &&
+           coord._y_coord >= 0 && coord._y_coord < _y_dim &&
            _nodes[coord._y_coord][coord._x_coord]._is_reachable;
 }
 
@@ -54,7 +50,7 @@ std::vector<util::direction> Grid::get_directions(
   std::vector<util::direction> possible_dirs;
   for (const auto dir : util::all_directions) {
     auto incr = util::to_increment(dir);
-    if (validNode(curr_coord+incr)) {
+    if (reachableNode(curr_coord+incr)) {
       possible_dirs.push_back(dir);
     }
   }
@@ -66,7 +62,7 @@ unsigned int Grid::get_distance(
   unsigned int num_nodes = 0;
   auto incr = util::to_increment(dir);
   auto runner = coord + incr;
-  while(validNode(runner)) { 
+  while(reachableNode(runner)) {
     runner += incr;
     ++num_nodes;
   }
@@ -87,7 +83,7 @@ void Grid::print(std::ostream & output_file, double num_walks) {
 	std::cout << std::showpoint;
 	std::cout << std::setprecision(5);
   for (int y = 0; y < _y_dim; y++) {
-    for (int x = _x_dim-1; x >= 0; x--) {
+    for (int x = 0; x < _x_dim; x++) {
       std::cout << std::setw(8) << _nodes[y][x]._num_visits / num_walks << " ";
     }
     std::cout << std::endl;

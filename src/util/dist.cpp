@@ -7,16 +7,20 @@
 // Utility namespace
 namespace util {
 
+// Recall input format
+// (x,y)-->
+//   |  .
+//   V    .
 util::Coord to_increment(direction dir) {
   unsigned int x,y;
   switch (dir) {
     case north:
       x =  0;
-      y =  1;
+      y =  -1;
       break;
     case north_east:
       x =  1;
-      y =  1;
+      y =  -1;
       break;
     case east:
       x =  1;
@@ -24,15 +28,15 @@ util::Coord to_increment(direction dir) {
       break;
     case south_east:
       x =  1;
-      y = -1;
+      y =  1;
       break;
     case south:
       x =  0;
-      y = -1;
+      y =  1;
       break;
     case south_west:
       x = -1;
-      y = -1;
+      y =  1;
       break;
     case west:
       x = -1;
@@ -40,7 +44,7 @@ util::Coord to_increment(direction dir) {
       break;
     case north_west:
       x = -1;
-      y =  1;
+      y = -1;
       break;
     default:
       throw std::runtime_error("Unknown direction to step in");
