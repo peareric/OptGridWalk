@@ -20,6 +20,6 @@ public:
   double sample() { return (double) _int_dist(_engine)/UINT64_MAX; }
 };
 
-}
+} // end namespace util
 
 #endif

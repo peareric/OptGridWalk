@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 
 int main(int argc, char* argv []) {
@@ -12,20 +13,22 @@ int main(int argc, char* argv []) {
   Grid mesh_grid(grid_input);
   std::cout << "Mesh grid read in successfully\n\n" << std::endl;
 
-  // Run the analog random walk with N samples
-  auto start = std::chrono::steady_clock::now();
-  double N = 10e7;
+  // Run the analog random walk with 10^7 samples
+  double num_samples = 1e7;
   MCWalk monte_carlo_walk(&mesh_grid);
-  std::cout << "Running analog random walk with " << N << " samples" << std::endl;
-  monte_carlo_walk.walk_grid(N);
-  double FOM = monte_carlo_walk.get_FOM();
-  std::cout << "Analog simulation has a FOM of: " << FOM << std::endl;
+  auto start = std::chrono::steady_clock::now();
+  std::cout << "Running analog random walk with " << num_samples << " samples";
+  std::cout << std::endl;
+  double FOM = monte_carlo_walk.walk_grid(num_samples);
   auto end = std::chrono::steady_clock::now();
   std::cout << "Clock time: "
-            << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()
-            << " ms" << std::endl;
+            << std::chrono::duration_cast<std::chrono::milliseconds>(
+              end - start).count() << " ms" << std::endl;
+  std::cout << "Analog simulation results:" << std::endl;
+  monte_carlo_walk.print_results();
 
-  // Print grid heatmap to input_file.out
+  std::cout << "Average analog spatial distribution:" << std::endl;
+  mesh_grid.print(std::cout, num_samples);
 
   return 0; 
 }

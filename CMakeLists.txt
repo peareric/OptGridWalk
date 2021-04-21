@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 3.12.4)
+project(GridWalkOpt)
+set(CMAKE_CXX_STANDARD 17)
+file(GLOB_RECURSE SRC_CPP_FILES "src/*.cpp")
+add_executable(gridwalkopt ${SRC_CPP_FILES})
