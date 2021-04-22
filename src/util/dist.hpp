@@ -38,26 +38,29 @@ public:
   PDF(RNG rng) : _rng(rng) {};
   ~PDF() {};
 
+  // Returns the rng to the default state
+  void reset_rng() { _rng.set_seed(); }
+
   // PDF is deduced by operator overloading or type enum
   // sample: samples a random point from the PDF
   // evalute: evaulates the PDF at a given point
 
   // Truncated Exponential PDF
-  double sample(
-    const double a, const double b, const double lambda,
+  unsigned int sample(
+    const unsigned int b, const double lambda,
     dist_type type = dist_type::truncated_exponential) const;
   double evaluate(
-    const double a, const double b, const double lambda,
-    const double point,
+    const unsigned int b, const double lambda,
+    const unsigned int point,
     dist_type type = dist_type::truncated_exponential) const;
 
   // Categorical PDF
   // Index of probability is returned and evaluted
-  double sample(
+  unsigned int sample(
     const std::vector<double> &probabilities,
     dist_type type = dist_type::categorical) const;
   double evaluate(
-    const std::vector<double> &probabilities, const double idx,
+    const std::vector<double> &probabilities, const unsigned int idx,
     dist_type type = dist_type::categorical) const;
 };
 

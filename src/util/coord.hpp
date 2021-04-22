@@ -11,6 +11,8 @@ struct Coord {
   unsigned int _x_coord = 0;
   unsigned int _y_coord = 0;
   Coord(unsigned int x, unsigned int y) : _x_coord(x), _y_coord(y) {};
+  Coord(const Coord & other_coord)
+    : _x_coord(other_coord._x_coord), _y_coord(other_coord._y_coord) {};
   Coord() {};
   ~Coord() {};
 

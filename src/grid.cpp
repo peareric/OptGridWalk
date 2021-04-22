@@ -25,10 +25,10 @@ Grid::Grid(std::ifstream & input_file) {
   input_file >> junk >> _x_dim >> _y_dim;
   // Read in start 
   input_file >> junk >> x >> y;
-  start = util::Coord(x,y);
+  _start = util::Coord(x,y);
   // Read in goal
   input_file >> junk >> x >> y;
-  goal = util::Coord(x,y);
+  _goal = util::Coord(x,y);
 
   // Read in grid
   bool reachable;
@@ -78,7 +78,15 @@ void Grid::visit(const util::Coord & coord) {
   }
 }
 
-void Grid::print(std::ostream & output_file, double num_walks) {
+void Grid::clear_visits() {
+  for (int y = 0; y < _y_dim; y++) {
+    for (int x = 0; x < _x_dim; x++) {
+      _nodes[y][x]._num_visits = 0;
+    }
+  }
+}
+
+void Grid::print(std::ostream & output_file, double num_walks) const {
   std::cout << std::fixed;
 	std::cout << std::showpoint;
 	std::cout << std::setprecision(5);

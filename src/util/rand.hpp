@@ -18,6 +18,12 @@ public:
 
   // Return a number uniformly distributed on [0,1]
   double sample() { return (double) _int_dist(_engine)/UINT64_MAX; }
+
+  // Sets the seed of the engine and resets the distribution
+  void set_seed(double seed = 16180339) {
+    _engine = std::mt19937_64(seed);
+    _int_dist.reset();
+  }
 };
 
 } // end namespace util

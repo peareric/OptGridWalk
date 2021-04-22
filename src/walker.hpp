@@ -12,9 +12,8 @@ class Walker {
 private:
   double _weight = 1.0;
   double _lambda = 1.0;
-  bool _biased_lambda = false;
+  bool _biased_walk = false;
   std::vector<double> _direction_probabilities;
-  bool _biased_direction = false;
   util::Coord _position;
   util::PDF _prob_distributions;
 
@@ -33,22 +32,22 @@ public:
   }
   ~Walker() {};
 
-  // Set the direction PDF to biased values
-  // Probabilities are assumed to be set in the following order:
-  // north, north_east, east, south_east,
-  // south, south_west, west, north_west
-  void set_direction_PDF(const std::vector<double> &probabilities) {
-    _direction_probabilities = probabilities;
-    for (const auto prob : probabilities) {
-      if (prob != 0.125) { _biased_direction = true; }
-    }
+  // Sets the weight to one and resets the RNG to the initial state
+  void reset() {
+    _weight = 1.0;
+    _prob_distributions.reset_rng();
   }
 
-  // Set the length PDF to a biased value
-  void set_length_PDF(const double lambda) { 
-    _lambda = lambda; 
-    if (lambda != 1.0) { _biased_lambda = true; }
-  }
+  // Reset the weight of the particle to one
+  void reset_weight() { _weight = 1.0; }
+
+  // Set the PDF to biased values
+  // Probabilities are assumed to be set in the following order:
+  // [direction PDF] [distance PDF]
+  // Direction parameters are passed in the order:
+  // north, north_east, east, south_east,
+  // south, south_west, west, north_west
+  void set_biased_PDF(const std::vector<double> &probabilities);
 
   // Modify the position
   void set_position(util::Coord start) { _position = start; }

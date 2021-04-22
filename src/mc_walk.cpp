@@ -19,16 +19,18 @@ double MCWalk::walk_grid(double num_samples) {
 
   // Walk the grid
   for (unsigned int i = 0; i < num_samples; i++) {
+    // Reset the weight of the walker each time through the grid
+    _walker.reset_weight();
     // Start with zero steps at the start node
     int walk_num_steps = 0;
     _walker.set_position(_grid->get_start());
-    _walker.visit_grid(_grid);
+    if (_track_grid) { _walker.visit_grid(_grid); }
     auto goal = _grid->get_goal();
 
     // Walk until the goal is reached or the max number of steps is met
     while (!_walker.at_coordinate(goal) && walk_num_steps < _max_steps) {
       _walker.step(_grid);
-      _walker.visit_grid(_grid);
+      if (_track_grid) { _walker.visit_grid(_grid); }
       ++walk_num_steps;
     }
 
@@ -49,27 +51,27 @@ double MCWalk::walk_grid(double num_samples) {
   // Average the number of steps
   double avg_num_steps = goal_num_steps / num_samples;
   // Average the analog number of steps
-  mean = goal_m1 / num_samples;
+  _mean = goal_m1 / num_samples;
   // Compute varaince of analog average
-  mean_var = (goal_m2/num_samples - mean*mean) / num_samples;
+  _mean_var = (goal_m2/num_samples - _mean*_mean) / num_samples;
   // Compute and return the figure of Merit of the walk
 	if (avg_num_steps == 0) {
     throw std::runtime_error("Average number of steps is 0!");
   }
-  else if (mean_var == 0) {
+  else if (_mean_var == 0) {
     throw std::runtime_error(
       "Standard deviation of average number of steps is 0!");
   }
-  FOM = 1.0/(avg_num_steps*mean_var);
-  return FOM;
+  _FOM = 1.0/(avg_num_steps*_mean_var);
+  return _FOM;
 }
 
 void MCWalk::print_results() const {
   std::cout << std::fixed;
 	std::cout << std::showpoint;
 	std::cout << std::setprecision(5);
-  std::cout << "mean:  " << std::setw(8) << mean << std::endl;
-  std::cout << "error: " << std::setw(8) << std::sqrt(mean_var) << std::endl;
-  std::cout << "FOM:   " << std::setw(8) << FOM << std::endl;
+  std::cout << "mean:  " << std::setw(8) << _mean << std::endl;
+  std::cout << "error: " << std::setw(8) << std::sqrt(_mean_var) << std::endl;
+  std::cout << "FOM:   " << std::setw(8) << _FOM << std::endl;
 }
 

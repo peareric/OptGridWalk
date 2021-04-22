@@ -9,8 +9,8 @@ namespace util {
 
 // Recall input format
 // (x,y)-->
-//   |  .
-//   V    .
+//  |  .
+//  V    .
 util::Coord to_increment(direction dir) {
   unsigned int x,y;
   switch (dir) {
@@ -52,27 +52,31 @@ util::Coord to_increment(direction dir) {
   return util::Coord(x,y);
 }
 
-// truncated exponential PDF given by:
-// lambda*exp(-lambda*(x-a))/(1-exp(-lambda*(b-a))); a<=x<=b
-double PDF::sample(
-    const double a, const double b, const double lambda,
-    dist_type type) const {
-  return a - std::log(1-_rng.sample()*(1 - std::exp(-lambda*(b-a))))/lambda;
+// continuous truncated exponential PDF given by:
+// lambda*exp(-lambda*(x-a))/(1-exp(-lambda*(b-a))); 0<=x<=b
+unsigned int PDF::sample(
+    const unsigned int b, const double lambda, dist_type type) const {
+  return std::ceil(-std::log(1-_rng.sample()*(1 - std::exp(-lambda*b)))/lambda);
 }
 double PDF::evaluate(
-    const double a, const double b, const double lambda, const double point,
+    const unsigned int b, const double lambda, const unsigned int point,
     dist_type type) const {
-  if (point < a or point > b) {
+  if (point > b) {
     throw std::runtime_error(
       "Truncated exponential evaluated outside of support.");
   }
-  return lambda*exp(-lambda*(point-a))/(1-exp(-lambda*(b-a)));
+  // Get CDF at previous discrete point
+  double cdf_prev = (point == 0) ? 0 :
+    (1-std::exp(-lambda*(point-1))) / (1-std::exp(-lambda*b));
+  // Get the CDF at the current point
+  double cdf = (1-std::exp(-lambda*point)) / (1-std::exp(-lambda*b));
+  return cdf-cdf_prev;
 }
 
 // Categorical PDF
 // Index of probability is returned and evaluted
 // Probabilities is assumed to be strictly positive
-double PDF::sample(
+unsigned int PDF::sample(
     const std::vector<double> &probabilities, dist_type type) const {
   double stop = _rng.sample();
   double total = std::accumulate(
@@ -80,16 +84,18 @@ double PDF::sample(
   for (size_t i = 0; i < probabilities.size(); i++) {
     stop -= probabilities[i]/total;
     if (stop <= 0) {
-      return (double) i;
+      return i;
     }
   }
   // Maybe exit loop on floating point roundoff error
-  return (double) probabilities.size()-1;
+  return probabilities.size()-1;
 }
 double PDF::evaluate(
-    const std::vector<double> &probabilities, const double idx,
+    const std::vector<double> &probabilities, const unsigned int idx,
     dist_type type) const {
-  return probabilities.at((int)idx);
+  double total = std::accumulate(
+    probabilities.begin(), probabilities.end(), 0.0, std::plus<double>());
+  return probabilities.at(idx)/total;
 }
 
 } // end namespace util

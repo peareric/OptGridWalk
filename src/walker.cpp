@@ -3,6 +3,7 @@
 #include "util/dist.hpp"
 
 #include <cmath>
+#include <iostream>
 
 // Samples a direction to walk in randomly
 util::direction Walker::sample_dir(const Grid * grid) {
@@ -28,11 +29,11 @@ util::direction Walker::sample_dir(const Grid * grid) {
   }
 
   // Adjust the weight to match analog case, analog direction is equiprobable
-  if (_biased_direction) {
+  if (_biased_walk) {
     // analog prob is 1/num_dirs
-    double bias_ratio = _prob_distributions.evaluate(
+    double bias_ratio = 1.0 / (_prob_distributions.evaluate(
         possible_dir_probs, dir_idx, util::dist_type::categorical) *
-        possible_dir_probs.size();
+        possible_dir_probs.size());
     _weight *= bias_ratio;
   }
 
@@ -40,21 +41,28 @@ util::direction Walker::sample_dir(const Grid * grid) {
   return possible_dirs[dir_idx];
 }
 
+void Walker::set_biased_PDF(const std::vector<double> &probabilities) {
+  _biased_walk = true;
+  _direction_probabilities = std::vector<double>(
+    probabilities.begin(), probabilities.end()-1);
+  _lambda = probabilities.back();
+}
+
 // Returns the distance to travel
 unsigned int Walker::sample_dist(const Grid * grid, const util::direction dir){
   // Get the total valid distance
   unsigned int total = grid->get_distance(_position, dir);
   // Sample the distance to travel along the total
-  unsigned int travel_dist = std::ceil(_prob_distributions.sample(
-    0, total, _lambda, util::dist_type::truncated_exponential));
+  unsigned int travel_dist = _prob_distributions.sample(
+    total, _lambda, util::dist_type::truncated_exponential);
 
   // Adjust the weight to match analog case, analog lambda is 1
-  if (_biased_lambda) {
+  if (_biased_walk) {
     double bias_ratio = _prob_distributions.evaluate(
-        0, total, 1.0, travel_dist, 
+        total, 1.0, travel_dist,
         util::dist_type::truncated_exponential) /
       _prob_distributions.evaluate(
-        0, total, _lambda, travel_dist,
+        total, _lambda, travel_dist,
         util::dist_type::truncated_exponential);
     _weight *= bias_ratio;
   }
