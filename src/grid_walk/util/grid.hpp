@@ -41,6 +41,7 @@ private:
 
   // Returns true if node at coordinate is reachable
   bool reachableNode(const util::Coord & coord) const;
+
 public:
   // Ctor from input file
   Grid(std::ifstream & input_file);

@@ -11,7 +11,7 @@
 namespace util {
 
 // Enumerated list of all distribution types
-enum dist_type {truncated_exponential, categorical};
+enum dist_type {truncated_exponential, categorical, guassian, uniform};
 
 // Enumerated list of all directions 
 // Note standard guarantees that the underlaying enums range in order 0-7
@@ -62,6 +62,19 @@ public:
   double evaluate(
     const std::vector<double> &probabilities, const unsigned int idx,
     dist_type type = dist_type::categorical) const;
+
+  // Independent Gaussian PDFs
+  std::vector<double> sample(
+      const std::vector<double> & means, const double std,
+      dist_type type = dist_type::guassian) const;
+
+  // Sample PRNG [0,1]
+  double sample(dist_type type = dist_type::uniform) {
+    return _rng.sample();
+  }
+  double evaluate(dist_type type = dist_type::uniform) {
+    return 1.0;
+  }
 };
 
 } // end namespace util

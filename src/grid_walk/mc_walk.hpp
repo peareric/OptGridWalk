@@ -10,8 +10,11 @@
 // Class governing Monte Carlo random walk through the grid
 class MCWalk {
 private:
+  // Pointer to the grid being walked on
   Grid * _grid;
+  // Walker object to move on grid
   Walker _walker;
+  // Whether of not to update visits on the grid as walk progresses
   bool _track_grid;
   // Average number of steps taken to goal
   double _num_steps = 0;
@@ -24,7 +27,9 @@ private:
   // Hard coded bail out number of steps for impossible walks
   const double _max_steps = 100000;
   // Lowest acceptable weight
+  // [no longer used, importance sampling commented out]
   const double _min_wight = 1e-7;
+
 public:
   MCWalk(Grid * grid, bool track_grid = false)
     : _grid(grid), _track_grid(track_grid) {};
@@ -39,33 +44,25 @@ public:
     _FOM = 0;
   }
 
-  // Set the PDF to biased values
+  // Set the PMF to biased values
   // Probabilities are assumed to be set in the following order:
-  // [direction PDF] [distance PDF]
+  // [direction PMF] [distance PMF]
   // Direction parameters are passed in the order:
   // north, north_east, east, south_east,
   // south, south_west, west, north_west
-  void set_biased_PDF(const std::vector<double> &probabilities) {
-    _walker.set_biased_PDF(probabilities);
+  void set_biased_PMF(const std::vector<double> &probabilities) {
+    _walker.set_biased_PMF(probabilities);
   }
 
   // Perform Monte Carlo random walk on the grid num_samples times and return
   // the average number of steps taken to get to the goal per history
   double walk_grid(double num_samples = 1e7);
 
-  // Requires that walk_grid has already been called, returns the estimate of
-  // the analog number of steps to the goal corresponding to the last walk,
-  // and estimate of the associated error, and the figure of merit
-  std::vector<double> get_results() const {
-    return std::vector<double>({_mean, std::sqrt(_mean_var), _FOM});
-  }
-
-  // Requires that walk_grid has already been called, returns the figure of
-  // merit of the last walk
-  double get_FOM() const { return _FOM; }
-
   // Prints the return of get_estimate as well as the figure of merit
   void print_results() const;
+
+  // Print the PMF paramters of teh walker
+  void print_walker() const { _walker.print_PMF_paramters(); }
 };
 
 #endif

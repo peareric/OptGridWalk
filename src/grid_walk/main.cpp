@@ -7,9 +7,6 @@
 #include <string>
 
 int main(int argc, char* argv []) {
-  // Run all Monte Carlo walks with 10,000 samples
-  double num_samples = 1e4;
-
   if (argc != 3) {
     std::cout << "Must pass both grid and walk parameter specification files";
     std::cout << std::endl;
@@ -29,28 +26,28 @@ int main(int argc, char* argv []) {
   grid_input.close();
   std::cout << "Mesh grid read in successfully\n" << std::endl;
 
-  // Open input file with the biased PDF parameters to simulate and build
+  // Open input file with the biased PMF parameters to simulate and build
   // monte carlo simulation manager class
-  std::ifstream biased_PDF_input;
-  std::string PDF_filename(argv[2]);
-  biased_PDF_input.open(PDF_filename);
-  if(!biased_PDF_input.is_open()) {
-    std::cout << "Failed to open "+PDF_filename << std::endl;
+  std::ifstream biased_PMF_input;
+  std::string PMF_filename(argv[2]);
+  biased_PMF_input.open(PMF_filename);
+  if(!biased_PMF_input.is_open()) {
+    std::cout << "Failed to open "+PMF_filename << std::endl;
     return 2;
   }
-  std::cout << "Reading biased PDF parameters from "+PDF_filename << std::endl;
-  WalkManager MC_manager(biased_PDF_input, num_samples);
+  std::cout << "Reading biased PMF parameters from "+PMF_filename << std::endl;
+  WalkManager MC_manager(biased_PMF_input);
   grid_input.close();
-  std::cout << "PDF parameters read in successfully\n" << std::endl;
+  std::cout << "PMF parameters read in successfully\n" << std::endl;
 
   // Run all Monte Carlo simualations, outputting results and storing FOM
-  MC_manager.run_all_cases(&mesh_grid);
+  MC_manager.execute(&mesh_grid);
 
   // Save the data for training
   std::ofstream output_file;
   std::string grid_name(grid_filename.begin()+12, grid_filename.end()-4);
-  std::string PDF_name(PDF_filename.begin()+12, PDF_filename.end()-4);
-  std::string output_filename = grid_name+"_"+PDF_name+"_results.txt";
+  std::string PMF_name(PMF_filename.begin()+12, PMF_filename.end()-4);
+  std::string output_filename = grid_name+"_"+PMF_name+"_results.txt";
   std::cout << output_filename << std::endl;
   output_file.open(output_filename);
   if (!output_file.is_open()) {
@@ -58,7 +55,7 @@ int main(int argc, char* argv []) {
     output_filename = "walk_results.txt";
     output_file.open(output_filename);
   }
-  std::cout << "Writing PDF parameter and average steps data to ";
+  std::cout << "Writing PMF parameters and average steps data to ";
   std::cout <<  output_filename << std::endl;
   MC_manager.print_results(output_file);
   output_file.close();

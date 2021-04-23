@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <string>
 
+// True is node is reachable
 bool Grid::reachableNode(const util::Coord & coord) const {
     return coord._x_coord >= 0 && coord._x_coord < _x_dim &&
            coord._y_coord >= 0 && coord._y_coord < _y_dim &&
@@ -12,11 +13,16 @@ bool Grid::reachableNode(const util::Coord & coord) const {
 }
 
 // Parse input file for grid, start, and goal specification
+// Note zero based indexing is used
 // File Format:
-// dimensions x y
-// start x y
-// goal x y
-// grid of 1s of 0s denoting whether node is reachable or not
+// dimensions [row_length] [num_rows]
+// start [x_index_of_start_node] [y_index_of_start_node]
+// goal [x_index_of_goal_node] [y_index_of_goal_node]
+// [0/1] . . [0/1]
+//   .   . .   .
+//   .   . .   .
+// [0/1] . . [0/1]
+// Grid of 1s of 0s denoting whether node is reachable or not
 Grid::Grid(std::ifstream & input_file) {
   // Read in junk ("dimensions", "start", and "goal") to junk variable
   std::string junk;
@@ -45,6 +51,7 @@ Grid::Grid(std::ifstream & input_file) {
   }
 }
 
+// Return all the possible directions of travel from current coordinate
 std::vector<util::direction> Grid::get_directions(
       const util::Coord & curr_coord) const {
   std::vector<util::direction> possible_dirs;
@@ -57,6 +64,7 @@ std::vector<util::direction> Grid::get_directions(
   return std::move(possible_dirs);
 }
 
+// Return the number of contiguous nodes from coord in dir
 unsigned int Grid::get_distance(
     const util::Coord & coord, util::direction dir) const {
   unsigned int num_nodes = 0;
@@ -69,6 +77,7 @@ unsigned int Grid::get_distance(
   return num_nodes;
 }
 
+// Increment _num_visits of node at coord
 void Grid::visit(const util::Coord & coord) {
   if (reachableNode(coord)) {
     _nodes[coord._y_coord][coord._x_coord]._num_visits += 1;
@@ -78,6 +87,7 @@ void Grid::visit(const util::Coord & coord) {
   }
 }
 
+// Set _num_visits to zero fot all nodes
 void Grid::clear_visits() {
   for (int y = 0; y < _y_dim; y++) {
     for (int x = 0; x < _x_dim; x++) {
@@ -86,6 +96,7 @@ void Grid::clear_visits() {
   }
 }
 
+// Print the average number of visits per node
 void Grid::print(std::ostream & output_file, double num_walks) const {
   std::cout << std::fixed;
 	std::cout << std::showpoint;

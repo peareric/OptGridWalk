@@ -4,6 +4,8 @@
 #include <numeric>
 #include <stdexcept>
 
+static const double pi = 3.14159265358979323846;
+
 // Utility namespace
 namespace util {
 
@@ -11,6 +13,8 @@ namespace util {
 // (x,y)-->
 //  |  .
 //  V    .
+// Returns coordinate pair corresponding to the x and y increments of the
+// direction
 util::Coord to_increment(direction dir) {
   unsigned int x,y;
   switch (dir) {
@@ -96,6 +100,19 @@ double PDF::evaluate(
   double total = std::accumulate(
     probabilities.begin(), probabilities.end(), 0.0, std::plus<double>());
   return probabilities.at(idx)/total;
+}
+
+// N-dimensional independent Gaussisan pdf 
+std::vector<double> PDF::sample(
+    const std::vector<double> & means, const double stdev,
+    dist_type type) const {
+  std::vector<double> samples;
+  for (const double mean : means) {
+    samples.push_back(
+      mean + stdev*std::sqrt(-2*std::log(_rng.sample()))
+                  *std::cos(2*pi*_rng.sample()));
+  }
+  return std::move(samples);
 }
 
 } // end namespace util

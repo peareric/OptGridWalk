@@ -19,6 +19,7 @@ double MCWalk::walk_grid(double num_samples) {
   // Walk the grid
   for (unsigned int i = 0; i < num_samples; i++) {
     // Reset the weight of the walker each time through the grid
+    // [no longer used, importance sampling commented out]
     _walker.reset_weight();
     // Start with zero steps at the start node
     int walk_num_steps = 0;
@@ -33,14 +34,16 @@ double MCWalk::walk_grid(double num_samples) {
       ++walk_num_steps;
     }
 
+    // Check how the walk eneded
     if (_walker.at_coordinate(goal)) {
       goal_num_steps += walk_num_steps;
+      // [no longer used, importance sampling commented out]
       double weighted_steps = _walker.get_weight()*walk_num_steps;
       goal_m1 += weighted_steps;
       goal_m2 += weighted_steps*weighted_steps;
     }
     else {
-      // If the max steps stop and return a FOM of zero
+      // If the max steps stop and returns a mean of the max allowed steps
       std::cout << "Max number of steps exceeded on sample " << i << std::endl;
       _num_steps = _max_steps;
       _mean = _max_steps;

@@ -3,6 +3,7 @@
 #include "util/dist.hpp"
 
 #include <cmath>
+#include <iomanip>
 #include <iostream>
 
 // Samples a direction to walk in randomly
@@ -30,6 +31,7 @@ util::direction Walker::sample_dir(const Grid * grid) {
   }
 
   // Adjust the weight to match analog case, analog direction is equiprobable
+  // [no longer used, importance sampling commented out]
   if (_biased_walk) {
     // analog prob is 1/num_dirs
     double bias_ratio = 1.0 / (_prob_distributions.evaluate(
@@ -51,6 +53,7 @@ unsigned int Walker::sample_dist(const Grid * grid, const util::direction dir){
     total, _lambda, util::dist_type::truncated_exponential);
 
   // Adjust the weight to match analog case, analog lambda is 1
+  // [no longer used, importance sampling commented out]
   if (_biased_walk) {
     double bias_ratio = _prob_distributions.evaluate(
         total, 1.0, travel_dist,
@@ -64,7 +67,8 @@ unsigned int Walker::sample_dist(const Grid * grid, const util::direction dir){
   return travel_dist;
 }
 
-void Walker::set_biased_PDF(const std::vector<double> &probabilities) {
+void Walker::set_biased_PMF(const std::vector<double> &probabilities) {
+  // Importance sampling commented out
   // _biased_walk = true;
   _direction_probabilities = std::vector<double>(
     probabilities.begin(), probabilities.end()-1);
@@ -79,5 +83,23 @@ void Walker::step(const Grid * grid) {
   auto dist = sample_dist(grid, dir);
   // Move the walker to the new node
   _position += util::to_increment(dir)*dist;
+}
+
+void Walker::print_PMF_paramters() const {
+  std::cout << std::fixed;
+	std::cout << std::showpoint;
+	std::cout << std::setprecision(4);
+  double total = std::accumulate(
+    _direction_probabilities.begin(), _direction_probabilities.end(), 0.0,
+    std::plus<double>());
+  std::cout << std::setw(7) << "N   " << std::setw(7) << "NW  ";
+  std::cout << std::setw(7) << "W   " << std::setw(7) << "SW  ";
+  std::cout << std::setw(7) << "S   " << std::setw(7) << "SE  ";
+  std::cout << std::setw(7) << "E   " << std::setw(7) << "SE  ";
+  std::cout << std::setw(7) << "lambda " << std::endl;
+  for (const auto& dir : _direction_probabilities) {
+    std::cout << std::setw(5) << dir/total << " ";
+  }
+  std::cout << std::setw(5) << _lambda << std::endl;
 }
 
