@@ -1,8 +1,8 @@
 #ifndef __GRID_HEADER__
 #define __GRID_HEADER__
 
-#include "util/coord.hpp"
-#include "util/dist.hpp"
+#include "coord.hpp"
+#include "dist.hpp"
 
 #include <cmath>
 #include <fstream>

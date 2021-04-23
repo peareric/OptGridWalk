@@ -1,7 +1,7 @@
 #ifndef __MC_WALK_HEADER__
 #define __MC_WALK_HEADER__
 
-#include "grid.hpp"
+#include "util/grid.hpp"
 #include "walker.hpp"
 
 #include <cmath>
@@ -13,6 +13,8 @@ private:
   Grid * _grid;
   Walker _walker;
   bool _track_grid;
+  // Average number of steps taken to goal
+  double _num_steps = 0;
   // Estimate of the mean number of analog steps to goal
   double _mean = 0;
   // Estimate of the varinace the mean
@@ -20,7 +22,9 @@ private:
   // Figure of merit of the simulation
   double _FOM = 0;
   // Hard coded bail out number of steps for impossible walks
-  const double _max_steps = 10000;
+  const double _max_steps = 100000;
+  // Lowest acceptable weight
+  const double _min_wight = 1e-7;
 public:
   MCWalk(Grid * grid, bool track_grid = false)
     : _grid(grid), _track_grid(track_grid) {};
@@ -29,6 +33,7 @@ public:
   // Prepares for a repeated walk
   void reset() {
     _walker.reset();
+    _num_steps = 0;
     _mean = 0;
     _mean_var = 0;
     _FOM = 0;
@@ -45,9 +50,7 @@ public:
   }
 
   // Perform Monte Carlo random walk on the grid num_samples times and return
-  // the figure of merit, defined as 1 over the average number of steps taken
-  // from start to goal (T) times the variance of the estimate of the analog
-  // number of steps to the goal (R^2)
+  // the average number of steps taken to get to the goal per history
   double walk_grid(double num_samples = 1e7);
 
   // Requires that walk_grid has already been called, returns the estimate of

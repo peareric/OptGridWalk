@@ -16,7 +16,6 @@ double MCWalk::walk_grid(double num_samples) {
   // Accumulator for the second moment of the weighted number of steps to the
   // goal 
   double goal_m2 = 0;
-
   // Walk the grid
   for (unsigned int i = 0; i < num_samples; i++) {
     // Reset the weight of the walker each time through the grid
@@ -34,7 +33,6 @@ double MCWalk::walk_grid(double num_samples) {
       ++walk_num_steps;
     }
 
-    // Check if the goal was reached and score accumulators
     if (_walker.at_coordinate(goal)) {
       goal_num_steps += walk_num_steps;
       double weighted_steps = _walker.get_weight()*walk_num_steps;
@@ -44,26 +42,30 @@ double MCWalk::walk_grid(double num_samples) {
     else {
       // If the max steps stop and return a FOM of zero
       std::cout << "Max number of steps exceeded on sample " << i << std::endl;
-      return 0;
+      _num_steps = _max_steps;
+      _mean = _max_steps;
+      _mean_var = 0.0;
+      _FOM = 0.0;
+      return _mean;
     }
   }
 
   // Average the number of steps
-  double avg_num_steps = goal_num_steps / num_samples;
+  _num_steps = goal_num_steps / num_samples;
   // Average the analog number of steps
   _mean = goal_m1 / num_samples;
   // Compute varaince of analog average
-  _mean_var = (goal_m2/num_samples - _mean*_mean) / num_samples;
+  _mean_var = (goal_m2 / num_samples - _mean*_mean) / num_samples;
   // Compute and return the figure of Merit of the walk
-	if (avg_num_steps == 0) {
+	if (_num_steps == 0) {
     throw std::runtime_error("Average number of steps is 0!");
   }
   else if (_mean_var == 0) {
     throw std::runtime_error(
       "Standard deviation of average number of steps is 0!");
   }
-  _FOM = 1.0/(avg_num_steps*_mean_var);
-  return _FOM;
+  _FOM = 1.0/(_num_steps*_mean_var);
+  return _mean;
 }
 
 void MCWalk::print_results() const {

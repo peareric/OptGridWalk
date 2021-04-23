@@ -1,7 +1,7 @@
 #ifndef __WALKER_HEADER__
 #define __WALKER_HEADER__
 
-#include "grid.hpp"
+#include "util/grid.hpp"
 #include "util/coord.hpp"
 #include "util/dist.hpp"
 
@@ -12,7 +12,7 @@ class Walker {
 private:
   double _weight = 1.0;
   double _lambda = 1.0;
-  bool _biased_walk = false;
+  const bool _biased_walk = false;
   std::vector<double> _direction_probabilities;
   util::Coord _position;
   util::PDF _prob_distributions;

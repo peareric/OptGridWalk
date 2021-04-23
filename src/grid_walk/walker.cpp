@@ -15,8 +15,9 @@ util::direction Walker::sample_dir(const Grid * grid) {
   unsigned int dir_idx;
   std::vector<double> possible_dir_probs;
   if (possible_dirs.size() == util::all_directions.size()) {
+    possible_dir_probs = _direction_probabilities;
     dir_idx = _prob_distributions.sample(
-      _direction_probabilities, util::dist_type::categorical);
+      possible_dir_probs, util::dist_type::categorical);
   }
   // Otherwise construct a vector of only possible direction probabilies
   // and sample direction from it
@@ -41,13 +42,6 @@ util::direction Walker::sample_dir(const Grid * grid) {
   return possible_dirs[dir_idx];
 }
 
-void Walker::set_biased_PDF(const std::vector<double> &probabilities) {
-  _biased_walk = true;
-  _direction_probabilities = std::vector<double>(
-    probabilities.begin(), probabilities.end()-1);
-  _lambda = probabilities.back();
-}
-
 // Returns the distance to travel
 unsigned int Walker::sample_dist(const Grid * grid, const util::direction dir){
   // Get the total valid distance
@@ -68,6 +62,13 @@ unsigned int Walker::sample_dist(const Grid * grid, const util::direction dir){
   }
 
   return travel_dist;
+}
+
+void Walker::set_biased_PDF(const std::vector<double> &probabilities) {
+  // _biased_walk = true;
+  _direction_probabilities = std::vector<double>(
+    probabilities.begin(), probabilities.end()-1);
+  _lambda = probabilities.back();
 }
 
 // Randomly samples the next grid node of the walker
