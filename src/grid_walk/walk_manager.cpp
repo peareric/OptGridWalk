@@ -127,9 +127,9 @@ void WalkManager::simulate_annealing(Grid * grid) {
     double temp = -0.1*std::log(i/_num_evals);
     std::vector<double> candidate = _prob_distributions.sample(
       std::vector<double>(_walk_data.back().begin(), _walk_data.back().end()-1),
-      temp, util::dist_type::guassian);
+      temp, 10.0*temp, util::dist_type::guassian);
     // Don't allow negative probabilities
-    for (auto& elem : candidate) { if (elem < 0) { elem = 0; }; }
+    for (int i = 0; i < 8; i++) { if (candidate[i] < 0) { candidate[i] = 0; } }
 
     // Evaluate candidate
     grid_walk.reset();

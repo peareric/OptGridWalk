@@ -104,14 +104,17 @@ double PDF::evaluate(
 
 // N-dimensional independent Gaussisan pdf 
 std::vector<double> PDF::sample(
-    const std::vector<double> & means, const double stdev,
+    const std::vector<double> & means, const double std_1, const double std_2,
     dist_type type) const {
   std::vector<double> samples;
-  for (const double mean : means) {
+  for (int i = 0; i < means.size()-1; i++) {
     samples.push_back(
-      mean + stdev*std::sqrt(-2*std::log(_rng.sample()))
+      means[i] + std_1*std::sqrt(-2*std::log(_rng.sample()))
                   *std::cos(2*pi*_rng.sample()));
   }
+  samples.push_back(
+      means.back() + std_2*std::sqrt(-2*std::log(_rng.sample()))
+                     *std::cos(2*pi*_rng.sample()));
   return std::move(samples);
 }
 

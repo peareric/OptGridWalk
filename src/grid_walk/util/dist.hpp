@@ -64,9 +64,10 @@ public:
     dist_type type = dist_type::categorical) const;
 
   // Independent Gaussian PDFs
+  // std_2 is applied to last element, std_1 is applied to the rest
   std::vector<double> sample(
-      const std::vector<double> & means, const double std,
-      dist_type type = dist_type::guassian) const;
+      const std::vector<double> & means, const double std_1,
+      const double std_2, dist_type type = dist_type::guassian) const;
 
   // Sample PRNG [0,1]
   double sample(dist_type type = dist_type::uniform) {

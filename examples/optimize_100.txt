@@ -1,0 +1,3 @@
+Optimization 100
+Samples 1000
+Print Spatial Distributions 0
