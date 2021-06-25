@@ -22,10 +22,12 @@ goal [goal_node_x_index] [goal_node_x_index]
 Where the gird matrix has nodes_in_y_dimension rows and 
 nodes_in_x_dimension columns. The x indices start at 0 on the left and 
 increment to the right, y indices start at 0 on the top and increment moving 
-down i.e, 
-(x,y)--> 
+down i.e,   
+<pre>
+(x,y)-->  
   |  .  
-  V    . 
+  V    .  
+</pre>
   
 ## Walk Parameter Specification Format 
 Walk parameters input files should follow the following convention: 
